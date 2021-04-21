@@ -1,7 +1,7 @@
-const int startBtt = 8;
-const int ledYel = 5;
-const int ledRed = 6;
-const int ledGrn = 7;
+#define startBtn 8
+#define ledYel 5
+#define ledRed 6
+#define ledGrn 7
 
 int stateStart = 0;
 
@@ -21,7 +21,7 @@ void reset() {
 void setup() {
 
     DDRA = 0xFF;
-    pinMode(startBtt, INPUT);
+    pinMode(startBtn, INPUT);
     pinMode(ledYel, OUTPUT);
     pinMode(ledRed, OUTPUT);
     pinMode(ledGrn, OUTPUT);
@@ -36,7 +36,7 @@ void setup() {
 
 void loop() {
 
-    stateStart = digitalRead(startBtt);
+    stateStart = digitalRead(startBtn);
     Serial.println(stateStart);
 
     if (stateStart == 0) {
