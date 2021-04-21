@@ -30,7 +30,7 @@ void setup() {
     digitalWrite(ledYel, HIGH);
     digitalWrite(ledRed, HIGH);
     digitalWrite(ledGrn, LOW);
-    Serial.begin(115200);
+    Serial.begin(9600);
     
 }
 
