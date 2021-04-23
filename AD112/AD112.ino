@@ -1,3 +1,8 @@
+#define ledGrn 7   // PORT C7
+#define ledYel 6   // PORT C6
+#define ledRed 5   // PORT C5
+#define startBtn 0 // PORT C0
+
 bool stateStart = 0;
 
 uint8_t digit[16] = { 0xC0, 0xF9, 0xA4, 0xB0, 0x99, 0x92, 0x82, 0xD8,
@@ -18,16 +23,16 @@ void _crossTheRoad()
 
 void _preStop() 
 {
-    PORTC |= ~ 0x7F;    // turn off LED green
-    PORTC &= 0xBF;  // turn on LED yellow
+    PORTC |= (1 << ledGrn);    // turn off LED green
+    PORTC &= ~(1 << ledYel);   // turn on LED yellow
     delay(3000); 
 }
 
 void _stop() 
 {
     for (int i = 9; i >= 0; --i) {
-        PORTC |= ~ 0xBF;    // turn off LED yellow
-        PORTC &= 0xDF;  // turn on LED red
+        PORTC |= (1 << ledYel);    // turn off LED yellow
+        PORTC &= ~(1 << ledRed);   // turn on LED red
         PORTA = digit[i];
         delay(1000);
         if (i == 0) _reset();
@@ -36,28 +41,36 @@ void _stop()
 
 void _reset() 
 {
-    PORTA = 0xFF;   // turn off 7-segment
-    PORTC &= 0x7F;  // turn on LED green
-    PORTC |= 0x60;  // turn off LED yellow & red
+    PORTA |= 0xFF;                              // turn off 7-segment
+    PORTC &= ~(1 << ledGrn);                    // turn on LED green
+    PORTC |= ((1 << ledYel) | (1 << ledRed));   // turn off LED yellow & red
+    
+    Serial.println("waiting...");
 }
 
 void setup() 
 {
-    DDRA = 0xFF;    // set PORT A to digital output
-    DDRC &= 0xFE;   // set PORT C0 to digital input
-    DDRC |= 0xE0;   // set PORT C (PC7:5) to digital output 
+    DDRA |= 0xFF;               // set PORT A to digital output
+    DDRC &= ~(1 << startBtn);   // set PORT C0 to digital input
+    DDRC |= 0xE0;               // set PORT C (PC7:5) to digital output 
                    
-    PORTA = 0xFF;   // turn off 7-segment
-    PORTC &= 0x7F;  // turn on LED green
-    PORTC |= 0x60;  // turn off LED yellow & red
+    PORTA |= 0xFF;                              // turn off 7-segment
+    PORTC &= ~(1 << ledGrn);                    // turn on LED green
+    PORTC |= ((1 << ledYel) | (1 << ledRed));   // turn off LED yellow & red
     
     Serial.begin(9600);
+    Serial.println("waiting...");
 }
 
 void loop() 
 {
     stateStart = PINC & 0x01;   // read input from PC0
-    Serial.println(stateStart);
-
-    if (stateStart == 0) _crossTheRoad();
+    
+    if (stateStart) {
+        return;
+    }
+    else if (!stateStart) {
+        Serial.println("Start...");
+        _crossTheRoad();
+    }
 }
