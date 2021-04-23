@@ -1,8 +1,3 @@
-#define startBtn 8
-#define ledYel 5
-#define ledRed 6
-#define ledGrn 7
-
 bool stateStart = 0;
 
 uint8_t digit[16] = { 0xC0, 0xF9, 0xA4, 0xB0, 0x99, 0x92, 0x82, 0xD8,
@@ -23,50 +18,45 @@ void _crossTheRoad()
 
 void _preStop() 
 {
-    digitalWrite(ledGrn, HIGH);
-    digitalWrite(ledYel, LOW);
+    PORTC |= ~ 0x7F;    // turn off LED green
+    PORTC &= 0xBF;  // turn on LED yellow
     delay(3000); 
 }
 
 void _stop() 
 {
     for (int i = 9; i >= 0; --i) {
-        digitalWrite(ledYel, HIGH);
-        digitalWrite(ledRed, LOW);
+        PORTC |= ~ 0xBF;    // turn off LED yellow
+        PORTC &= 0xDF;  // turn on LED red
         PORTA = digit[i];
         delay(1000);
-
         if (i == 0) _reset();
     }
 }
 
 void _reset() 
 {
-    PORTA = 0xFF;
-    digitalWrite(ledYel, HIGH);
-    digitalWrite(ledRed, HIGH);
-    digitalWrite(ledGrn, LOW);
+    PORTA = 0xFF;   // turn off 7-segment
+    PORTC &= 0x7F;  // turn on LED green
+    PORTC |= 0x60;  // turn off LED yellow & red
 }
 
 void setup() 
 {
-    DDRA = 0xFF;
-    pinMode(startBtn, INPUT);
-    pinMode(ledYel, OUTPUT);
-    pinMode(ledRed, OUTPUT);
-    pinMode(ledGrn, OUTPUT);
-
-    PORTA = 0xFF;
-    digitalWrite(ledYel, HIGH);
-    digitalWrite(ledRed, HIGH);
-    digitalWrite(ledGrn, LOW);
+    DDRA = 0xFF;    // set PORT A to digital output
+    DDRC &= 0xFE;   // set PORT C0 to digital input
+    DDRC |= 0xE0;   // set PORT C (PC7:5) to digital output 
+                   
+    PORTA = 0xFF;   // turn off 7-segment
+    PORTC &= 0x7F;  // turn on LED green
+    PORTC |= 0x60;  // turn off LED yellow & red
     
     Serial.begin(9600);
 }
 
 void loop() 
 {
-    stateStart = digitalRead(startBtn);
+    stateStart = PINC & 0x01;   // read input from PC0
     Serial.println(stateStart);
 
     if (stateStart == 0) _crossTheRoad();
