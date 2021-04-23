@@ -9,7 +9,7 @@ uint8_t digit[16] = { 0xC0, 0xF9, 0xA4, 0xB0, 0x99, 0x92, 0x82, 0xD8,
                       0x80, 0x90, 0x88, 0x83, 0xA7, 0xA1, 0x86, 0x8E  
                     };
 
-void _crossTheRoad() 
+void _crossTheRoad(void) 
 {
     for (int i = 5; i >= 0; --i) {
         PORTA = digit[i];
@@ -21,25 +21,27 @@ void _crossTheRoad()
     }
 }
 
-void _preStop() 
+void _preStop(void) 
 {
     PORTC |= (1 << ledGrn);    // turn off LED green
     PORTC &= ~(1 << ledYel);   // turn on LED yellow
     delay(3000); 
 }
 
-void _stop() 
+void _stop(void) 
 {
     for (int i = 9; i >= 0; --i) {
         PORTC |= (1 << ledYel);    // turn off LED yellow
         PORTC &= ~(1 << ledRed);   // turn on LED red
         PORTA = digit[i];
         delay(1000);
-        if (i == 0) _reset();
+        if (i == 0) {
+            _reset();
+        }
     }
 }
 
-void _reset() 
+void _reset(void) 
 {
     PORTA |= 0xFF;                              // turn off 7-segment
     PORTC &= ~(1 << ledGrn);                    // turn on LED green
@@ -68,8 +70,7 @@ void loop()
     
     if (stateStart) {
         return;
-    }
-    else if (!stateStart) {
+    } else if (!stateStart) {
         Serial.println("Start...");
         _crossTheRoad();
     }
