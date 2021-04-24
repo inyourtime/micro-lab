@@ -14,8 +14,8 @@ void _crossTheRoad(void)
     for (int i = 5; i >= 0; --i) {
         PORTA = digit[i];
         if (i == 0) {
-           _preStop();
-           _stop(); 
+            _preStop();
+            _stop(); 
         }
         delay(1000);
     }
@@ -73,5 +73,5 @@ void loop()
     } else if (!stateStart) {
         Serial.println("Start...");
         _crossTheRoad();
-    }
+      }
 }
