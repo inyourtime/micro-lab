@@ -38,6 +38,7 @@ void loop()
                 PORTA |= 0xFF;
                 PORTC |= 0xE0;
                 PORTC &= ~(1 << ledGrn);
+                state = 1;
             }
             break;
         
@@ -61,7 +62,8 @@ void loop()
         default:
             PORTA |= 0xFF;
             PORTC |= 0xE0;
-            PORTC &= ~(1 << ledGrn);     
+            PORTC &= ~(1 << ledGrn); 
+            state = 1;    
     
     }
 }
