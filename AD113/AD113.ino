@@ -174,16 +174,16 @@ void signEnter(uint8_t num)
 
 void enterPassword(void) 
 {
-        PORTC |= 0xE0;
-        PORTC &= ~(1 << ledYel);
-        Serial.print("Enter your password:");
+    PORTC |= 0xE0;
+    PORTC &= ~(1 << ledYel);
+    Serial.print("Enter your password:");
+    enteredPassword = readPassword();
+    delay(10);
+    while (enteredPassword != myPassword) {
+        Serial.print("Enter password again:");
         enteredPassword = readPassword();
         delay(10);
-        while (enteredPassword != myPassword) {
-            Serial.print("Enter password again:");
-            enteredPassword = readPassword();
-            delay(10);
-        }
+    }
 }
 
 uint16_t readPassword(void)
