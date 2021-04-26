@@ -9,6 +9,7 @@ uint16_t enteredPassword;
 
 uint8_t digit[4] = { 0xC0, 0xF9, 0xA4, 0xB0 };  // 7 segment 0,1,2,3 
 int state;
+bool Exit;
                     
 void setup() 
 {
@@ -32,7 +33,7 @@ void setup()
     
     DDRC |= 0xE0;   // set port C (PC7:5) to digital output of traffic light
     
-    /* ---------------------------------------------------*/
+    /*---------------------------------------------------*/
     
     /*  initialize  */
 
@@ -43,6 +44,10 @@ void setup()
     PORTC &= ~(1 << ledGrn);
     state = 1;
 
+    Serial.println("");
+    Serial.println("Welcome to parking");
+    Serial.println("NOW available: 3");
+
     /* - - - - - - */
 }
 
@@ -51,44 +56,49 @@ void loop()
     switch (state) {
 
         case 1:
-            while (PINC & 0x01) {}  // wait for IR sensor
+            while (PINC & 0x01) {}  // waiting for IR sensor
             state = 2;
             break;
         
         case 2:
             if (PORTA == digit[0]) {       // if digit 0
                 if (!(PINC & 0x02)) {      // if press EXIT button 
-                    PORTA = digit[1];
-                    PORTC |= 0xE0;
-                    PORTC &= ~(1 << ledGrn);
-                    state = 1; 
+                    state = 3; 
                 }
                 
                 break;
                 
             } else if (PORTA == digit[1]) {     // if digit 1
                 if (!(PINC & 0x02)) {           // if press EXIT button
-                    PORTA = digit[2];
-                    state = 1;
+                    Exit = true;
+                    state = 3;
                 } else if (!(PINC & 0x08)) {    // if press START button
-                    waitForStart();
+                    enterPassword();
+                    Serial.println("correct !");
+                    Exit = false;
+                    state = 3;
                 } else { break; }
                 
                 break;
                 
             } else if (PORTA == digit[2]) {     // if digit 2
                 if (!(PINC & 0x02)) {           // if press EXIT button
-                    PORTA = digit[3];
-                    state = 1;
+                    Exit = true;
+                    state = 3;
                 } else if (!(PINC & 0x08)) {    // if press START button
-                    waitForStart(); 
+                    enterPassword();
+                    Serial.println("correct !");
+                    Exit = false;
+                    state = 3; 
                 } else { break; }
                 
                 break;
                 
             } else if (PORTA == digit[3]) {     // if digit 3
                 if (!(PINC & 0x08)) {           // if press START button
-                    waitForStart();
+                    enterPassword();
+                    Serial.println("correct !");
+                    state = 3;
                 } else { break; }
                 
                 break;
@@ -96,21 +106,29 @@ void loop()
         
         case 3:
             if (PORTA == digit[3]) {
-                PORTA = digit[2];
-                PORTC |= 0xE0;
-                PORTC &= ~(1 << ledGrn);
+                signEnter(3);
                 state = 1;
                 break;
             } else if (PORTA == digit[2]) {
-                PORTA = digit[1];
-                PORTC |= 0xE0;
-                PORTC &= ~(1 << ledGrn);
-                state = 1;
+                if (Exit) {     // if car out
+                    signExit(2);
+                    state = 1;
+                } else if (!Exit) {     // if car in
+                    signEnter(2);
+                    state = 1;
+                }
                 break;
             } else if (PORTA == digit[1]) {
-                PORTA = digit[0];
-                PORTC |= 0xE0;
-                PORTC &= ~(1 << ledRed);
+                if (Exit) {     // if car out
+                    signExit(1);
+                    state = 1;
+                } else if (!Exit) {     // if car in
+                    signEnter(1);
+                    state = 1;
+                }
+                break;
+            } else if (PORTA == digit[0]) {
+                signExit(0);
                 state = 1;
                 break;
             }
@@ -118,16 +136,54 @@ void loop()
     }
 }
 
-void waitForStart() 
+void signExit(uint8_t num)
+{
+    if (num == 0) {
+        Serial.println("NOW available: 1");
+        PORTA = digit[1];
+        PORTC |= 0xE0;
+        PORTC &= ~(1 << ledGrn);
+    } else if (num == 1) {
+        Serial.println("NOW available: 2");
+        PORTA = digit[2];
+    } else if (num == 2) {
+        Serial.println("NOW available: 3");
+        PORTA = digit[3];
+    }
+}
+
+void signEnter(uint8_t num)
+{
+    if (num == 3) {
+        Serial.println("NOW available: 2");
+        PORTA = digit[2];
+        PORTC |= 0xE0;
+        PORTC &= ~(1 << ledGrn);
+    } else if (num == 2) {
+        Serial.println("NOW available: 1");
+        PORTA = digit[1];
+        PORTC |= 0xE0;
+        PORTC &= ~(1 << ledGrn);
+    } else if (num == 1) {
+        Serial.println("NOW available: 0");
+        PORTA = digit[0];
+        PORTC |= 0xE0;
+        PORTC &= ~(1 << ledRed);
+    }
+}
+
+void enterPassword(void) 
 {
         PORTC |= 0xE0;
         PORTC &= ~(1 << ledYel);
+        Serial.print("Enter your password:");
         enteredPassword = readPassword();
         delay(10);
         while (enteredPassword != myPassword) {
+            Serial.print("Enter password again:");
             enteredPassword = readPassword();
+            delay(10);
         }
-        state = 3;
 }
 
 uint16_t readPassword(void)
@@ -142,7 +198,7 @@ uint16_t readPassword(void)
         if (PINF & 0x80) {
             keypad[count] = PINK;
             count++;
-            Serial.write('.');
+            Serial.write('*');
             while (PINF & 0x80) {}
         }
         if (count == 3) {
@@ -172,6 +228,7 @@ uint16_t readPassword(void)
     }
 
     enteredPassword = (password[0] * 100) + (password[1] * 10) + password[2];
-    while (PINC & 0x04) {}
+    while (PINC & 0x04) {}  // waiting for Confirm 
+    Serial.println("");
     return(enteredPassword);
 }
