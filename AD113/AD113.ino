@@ -46,7 +46,7 @@ void setup()
 
     Serial.println("");
     Serial.println("Welcome to parking");
-    Serial.println("NOW available: 3");
+    Serial.println("car available: 3");
 
     /* - - - - - - */
 }
@@ -74,7 +74,6 @@ void loop()
                     state = 3;
                 } else if (!(PINC & 0x08)) {    // if press START button
                     enterPassword();
-                    Serial.println("correct !");
                     Exit = false;
                     state = 3;
                 } else { break; }
@@ -87,7 +86,6 @@ void loop()
                     state = 3;
                 } else if (!(PINC & 0x08)) {    // if press START button
                     enterPassword();
-                    Serial.println("correct !");
                     Exit = false;
                     state = 3; 
                 } else { break; }
@@ -97,7 +95,6 @@ void loop()
             } else if (PORTA == digit[3]) {     // if digit 3
                 if (!(PINC & 0x08)) {           // if press START button
                     enterPassword();
-                    Serial.println("correct !");
                     state = 3;
                 } else { break; }
                 
@@ -139,15 +136,15 @@ void loop()
 void signExit(uint8_t num)
 {
     if (num == 0) {
-        Serial.println("NOW available: 1");
+        Serial.println("car available: 1");
         PORTA = digit[1];
         PORTC |= 0xE0;
         PORTC &= ~(1 << ledGrn);
     } else if (num == 1) {
-        Serial.println("NOW available: 2");
+        Serial.println("car available: 2");
         PORTA = digit[2];
     } else if (num == 2) {
-        Serial.println("NOW available: 3");
+        Serial.println("car available: 3");
         PORTA = digit[3];
     }
 }
@@ -155,17 +152,17 @@ void signExit(uint8_t num)
 void signEnter(uint8_t num)
 {
     if (num == 3) {
-        Serial.println("NOW available: 2");
+        Serial.println("car available: 2");
         PORTA = digit[2];
         PORTC |= 0xE0;
         PORTC &= ~(1 << ledGrn);
     } else if (num == 2) {
-        Serial.println("NOW available: 1");
+        Serial.println("car available: 1");
         PORTA = digit[1];
         PORTC |= 0xE0;
         PORTC &= ~(1 << ledGrn);
     } else if (num == 1) {
-        Serial.println("NOW available: 0");
+        Serial.println("car available: FULL");
         PORTA = digit[0];
         PORTC |= 0xE0;
         PORTC &= ~(1 << ledRed);
@@ -184,6 +181,7 @@ void enterPassword(void)
         enteredPassword = readPassword();
         delay(10);
     }
+    Serial.println("correct !");
 }
 
 uint16_t readPassword(void)
