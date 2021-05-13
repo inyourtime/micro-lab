@@ -26,7 +26,7 @@ int adcChangeChannel(unsigned int ch)
 	}
 	else if (ch < 8)
 	{
-		ADMUX |= 0x8;
+		ADCSRB |= 0x8;
 		ADMUX &= ~(0x1F);
 		ADMUX |= (ch & 0x7);
 	}
