@@ -11,8 +11,8 @@ void setup()
 {
     Serial.begin(38400);
 
-    PORTB |= 0x3;
-    DDRB &= 0xFC;
+    PORTA |= 0x3;
+    DDRA &= 0xFC;
     varBtnPress = false;
     lightBtnPress = false;
     Serial.println("Program begin ... ");
