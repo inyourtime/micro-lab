@@ -1,6 +1,6 @@
-#include "adc_setup.h"
 #include <Arduino.h>
 #include <avr/io.h>
+#include "adc_setup.h"
 
 unsigned int sensorValue, adcChannel;
 char dataBuffer[16];
