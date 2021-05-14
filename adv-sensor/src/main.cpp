@@ -2,16 +2,34 @@
 #include <avr/io.h>
 #include "adc_setup.h"
 
+#define varResister 1
+#define lightSensor 2
+
 unsigned int sensorValue;
 unsigned int adcChannel;
 char dataBuffer[30];
 bool varBtnPress, lightBtnPress;
 
+void adcStartConversion(unsigned int adcChannel)
+{
+    if (adcChangeChannel(adcChannel))
+    {
+        if ((ADCSRA & 0x40) == 0)
+        {
+            ADCSRA |= 0x40;
+        }
+        else
+        {
+            Serial.println("Err: ADC change channel");
+        }
+    }
+}
+
 void setup()
 {
     PORTA |= 0x3;
     DDRA = 0xFC;
-    sensorValue= 0;
+    sensorValue = 0;
     varBtnPress = lightBtnPress = false;
     adcChannel = 0;
     adcSetup(adcChannel);
@@ -28,18 +46,8 @@ void loop()
         {
             varBtnPress = true;
             delay(10);
-            adcChannel = 1;
-            if (adcChangeChannel(adcChannel))
-            {
-                if ((ADCSRA & 0x40) == 0)
-                {
-                    ADCSRA |= 0x40;
-                }
-                else
-                {
-                    Serial.println("Err: ADC change channel");
-                }
-            }
+            adcChannel = varResister;
+            adcStartConversion(adcChannel);
         }
     }
     else
@@ -57,24 +65,17 @@ void loop()
         {
             lightBtnPress = true;
             delay(10);
-            adcChannel = 2;
-            if (adcChangeChannel(adcChannel))
-            {
-                if ((ADCSRA & 0x40) == 0)
-                {
-                    ADCSRA |= 0x40;
-                }
-                else
-                {
-                    Serial.println("Err: ADC change channel");
-                }
-            }
+            adcChannel = lightSensor;
+            adcStartConversion(adcChannel);
         }
     }
     else
     {
-        lightBtnPress = false;
-        delay(10);
+        if ((PINA & 0x2) != 0)
+        {
+            lightBtnPress = false;
+            delay(10);
+        }
     }
 
     if ((ADCSRA & 0x10) != 0)
@@ -82,18 +83,18 @@ void loop()
         sensorValue = ADC;
         switch (adcChannel)
         {
-        case 1:
+        case varResister:
             ADCSRA |= 0x10;
             sprintf(dataBuffer, "Value of varR: %4d\n", sensorValue);
             Serial.print(dataBuffer);
             break;
-        
-        case 2:
+
+        case lightSensor:
             ADCSRA |= 0x10;
             sprintf(dataBuffer, "Value of light_sensor: %4d\n", sensorValue);
             Serial.print(dataBuffer);
             break;
-        
+
         default:
             break;
         }

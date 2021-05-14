@@ -1,8 +1,8 @@
 #include <Arduino.h>
 #include <avr/io.h>
 
-const int varR = A0;
-const int lightSensor = A1;
+const int varR = A1;
+const int lightSensor = A2;
 unsigned int varR_value, lightSensor_value;
 char dataBuffer[30];
 bool varBtnPress, lightBtnPress;
