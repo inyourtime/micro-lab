@@ -38,5 +38,3 @@ int adcChangeChannel(unsigned int ch)
     }
     return output;
 }
-
-

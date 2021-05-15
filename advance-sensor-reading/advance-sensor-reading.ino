@@ -1,5 +1,3 @@
-#include <Arduino.h>
-#include <avr/io.h>
 #include "adc_setup.h"
 
 #define varResister 1

@@ -1,5 +1,3 @@
-#include <Arduino.h>
-#include <avr/io.h>
 
 const int varR = A1;
 const int lightSensor = A2;
