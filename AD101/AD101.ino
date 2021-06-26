@@ -24,10 +24,10 @@ void setup() {
 void loop() {
 
     // led traffic light
-//    for (int i = 0; i < 3; i++) {
-//        PORTA = ~(1 << i);
-//        delay(1000);
-//    }
+    for (int i = 0; i < 3; i++) {
+        PORTA = ~(1 << i);
+        delay(1000);
+    }
 
     // 7 segments
 //    for (int i = 0; i < 16; i++) {
@@ -57,16 +57,16 @@ void loop() {
 //        }
 //    }
 
-    for (int i = 0; i < 4; i++) {
-        PORTF = ~((1 << i) | (1 << 7-i));
-        delay(200);
-        if (i == 3) {
-            for (int i = 2; i > 0; i--) {
-                PORTF = ~((1 << i) | (1 << 7-i));
-                delay(200);
-            }
-        }
-    }
+//    for (int i = 0; i < 4; i++) {
+//        PORTF = ~((1 << i) | (1 << 7-i));
+//        delay(200);
+//        if (i == 3) {
+//            for (int i = 2; i > 0; i--) {
+//                PORTF = ~((1 << i) | (1 << 7-i));
+//                delay(200);
+//            }
+//        }
+//    }
 
 
 }
