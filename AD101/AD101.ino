@@ -50,8 +50,8 @@ void loop() {
 //        PORTF = ~(1 << i);
 //        delay(200);
 //        if (i == 7) {
-//            for (int i = 6; i > 0; i--) {
-//                PORTF = ~(1 << i);
+//            for (int j = 6; j > 0; j--) {
+//                PORTF = ~(1 << j);
 //                delay(200);
 //            }
 //        }
@@ -61,8 +61,8 @@ void loop() {
 //        PORTF = ~((1 << i) | (1 << 7-i));
 //        delay(200);
 //        if (i == 3) {
-//            for (int i = 2; i > 0; i--) {
-//                PORTF = ~((1 << i) | (1 << 7-i));
+//            for (int j = 2; j > 0; j--) {
+//                PORTF = ~((1 << j) | (1 << 7-j));
 //                delay(200);
 //            }
 //        }
