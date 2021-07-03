@@ -27,7 +27,6 @@ void loop() {
     
 //    task2();    // 7 segments module
 
-    task3();    // my pattern
 
 //    pattern1();
 
@@ -48,29 +47,6 @@ void task2() {
     for (int i = 0; i < 16; i++) {
         PORTC = digit[i];
         delay(1000);
-    }
-}
-
-void task3() {
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8-i; j++) {
-            PORTK = ~(1 << j+i);
-            for (int k = 0; k < i; k++) {
-                PORTK &= ~(1 << k);
-            }
-            delay(t1);
-        }
-        for (int j = 6; j > i-1; j--) {
-            PORTK = ~(1 << j);
-            for (int k = 0; k < i; k++) {
-                PORTK &= ~(1 << k);
-            } 
-            delay(t1);
-        }
-    }
-    for (int i = 7; i >= 0; i--) {
-        PORTK |= (1 << i);
-        delay(t1);
     }
 }
 
